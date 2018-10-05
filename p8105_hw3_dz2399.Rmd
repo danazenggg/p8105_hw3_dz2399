@@ -13,8 +13,7 @@ library(p8105.datasets)
 
 
 ## Problem 1
-### First, do some data cleaning:
-
+#### First, do some data cleaning:
 * format the data to use appropriate variable names;
 * focus on the “Overall Health” topic
 * include only responses from “Excellent” to “Poor” (i.e. no pre-collapsed categories)
@@ -24,8 +23,11 @@ data("brfss_smart2010")
 df_brfss <- brfss_smart2010 %>% 
   janitor::clean_names() %>% 
   filter(topic== 'Overall Health') %>%
-  select(-c(class,topic,question,sample_size,confidence_limit_low:geo_location)) %>%
-  mutate(response = as.factor(response))
+  select(-c(class,topic,question,sample_size,confidence_limit_low:geo_location)) %>% 
+  mutate(response= as.factor(response))
+df_brfss$response <-
+  factor(df_brfss$response,levels(df_brfss$response)[c(4,2,3,5,1)])
+rm(brfss_smart2010)
 ```
 
 #### In 2002, which states were observed at 7 locations?
@@ -37,10 +39,48 @@ df_brfss %>%
   mutate(locations = length(unique(locationdesc))) %>% 
   filter(locations == 7 ) %>% 
   distinct(locationabbr)
+```
 
+#### Make a “spaghetti plot” that shows the number of observations in each state from 2002 to 2010.
+```{r}
 df_brfss %>% 
-  filter(year==2002) %>%
-  unique(locationdesc)
+  group_by(locationabbr,year) %>% 
+  summarise(n_obs = length(data_value)) %>% 
+  filter(year==2002|year==2010) %>% 
+  ggplot(aes(x=year, y=n_obs, color = locationabbr))+
+  geom_line()
   
+  
+```
+
+#### Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.
+```{r}
+df_brfss %>% 
+  spread(key=response, value=data_value) %>% 
+  janitor::clean_names() %>% 
+  filter(year==2002|year==2006|year==2010, locationabbr=='NY') %>% 
+  group_by(year) %>% 
+  summarise(mean=mean(excellent),
+            sd=sd(excellent)) %>% 
+  knitr::kable(digits = 1)
+```
+
+#### For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.
+```{r}
+df_brfss %>% 
+  group_by(year, locationabbr, response) %>% 
+  summarise(state_mean=mean(data_value)) %>% 
+  ggplot(aes(x=year,y=state_mean))+
+  geom_point()+
+  facet_grid(.~response)
+```
+
+## Problem 2
+
+#### The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
+```{r}
+data("instacart")
+str(instacart)
+View(instacart)
 ```
 
