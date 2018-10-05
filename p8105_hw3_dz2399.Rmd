@@ -79,8 +79,6 @@ df_brfss %>%
 
 #### The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
 ```{r}
-data("instacart")
-str(instacart)
-View(instacart)
+
 ```
 
