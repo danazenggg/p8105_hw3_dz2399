@@ -118,20 +118,6 @@ aisle_plot$aisle_id_group <- as.numeric(cut(aisle_plot$aisle_id,4))
   ggtitle('The number of items ordered in each aisle.')
 ```
 
-```{r}
-ID <- 1:50
-A <- runif(50,1,100)
-
-df <- data.frame(ID,A)
-df$group <- as.numeric(cut(df$ID, 4))
-
-ggplot(df, aes(x = factor(ID), y = A)) + 
-  geom_point() + 
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5)) +
-  xlab("ID") +
-  facet_wrap(~group, ncol = 1, scales = "free_x")
-```
-
 
 #### Make a table showing the most popular item aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”
 ```{r}
@@ -180,7 +166,7 @@ df_nynoaa %>%
 #### Make a two-panel plot showing the average temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
 ```{r}
 df_nynoaa %>% 
-  filter(month=='01'|month=='06') %>%
+  filter(month=='01'|month=='07') %>%
   group_by(month,year) %>% 
   summarise(month_mean=mean(tmax)) %>%
   ggplot(aes(x=factor(month),y=month_mean))+
@@ -195,18 +181,18 @@ plot1 <- ggplot(data=df_nynoaa, aes(x=tmax,y=tmin))+
   ggtitle('tmax vs tmin for the full dataset')+
   theme(legend.position = "right")
 
-plot2 <- df_nynoaa %>%
-  filter(snow>0) %>%
-  ggplot(aes(x=year, y=snow))+
-  geom_density()
-
-plot3 <-  df_nynoaa %>%
-  filter(snow<100) %>%
-  ggplot(aes(x=year, y=snow))+
-  geom_point()+
-  theme(legend.position = "none")
-
-plot1/(plot2+plot3)
+# plot2 <- df_nynoaa %>%
+#   filter(snow>0) %>%
+#   ggplot(aes(x=year, y=snow))+
+#   geom_density()
+# 
+# plot3 <-  df_nynoaa %>%
+#   filter(snow<100) %>%
+#   ggplot(aes(x=year, y=snow))+
+#   geom_point()+
+#   theme(legend.position = "none")
+# 
+# plot1/(plot2+plot3)
 ```
 
 
