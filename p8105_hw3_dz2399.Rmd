@@ -48,10 +48,11 @@ df_brfss %>%
 df_brfss %>% 
   group_by(locationabbr,year) %>% 
   summarise(n_obs = length(data_value)) %>% 
-  filter(year==2002|year==2010) %>% 
   ggplot(aes(x=year, y=n_obs, color = locationabbr))+
   geom_line()+
-  ggtitle('the number of observations in each state from 2002 to 2010')
+  ggtitle('the number of observations in each state from 2002 to 2010')+
+  theme(legend.position = "bottom")
+
 ```
 
 #### Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.
@@ -129,6 +130,7 @@ instacart %>%
   filter(num_of_purchase == max(num_of_purchase)) %>% 
   knitr::kable()
 ```
+\\
 * The most popular items in baking ingredients is light brown sugar, purchased 499 times. The most popular items in dog food care is Snack Sticks chicken and Rice recipe Dog Treats, purchased 30 times. The most popular item in packaged vagetables fruits is Organic Baby Spinich, purchased 9784 times. 
 
 #### Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table)
@@ -179,20 +181,15 @@ df_nynoaa %>%
 plot1 <- ggplot(data=df_nynoaa, aes(x=tmax,y=tmin))+
   geom_hex()+
   ggtitle('tmax vs tmin for the full dataset')+
-  theme(legend.position = "right")
+  theme(legend.position = "bottom")
 
-# plot2 <- df_nynoaa %>%
-#   filter(snow>0) %>%
-#   ggplot(aes(x=year, y=snow))+
-#   geom_density()
-# 
-# plot3 <-  df_nynoaa %>%
-#   filter(snow<100) %>%
-#   ggplot(aes(x=year, y=snow))+
-#   geom_point()+
-#   theme(legend.position = "none")
-# 
-# plot1/(plot2+plot3)
+plot2 <- df_nynoaa %>%
+  filter(snow>0,snow<100) %>%
+  ggplot(aes(x=snow, color=year))+
+  geom_density( alpha=0.3)+
+  ggtitle('The distribution of snowfall values between 0 and 100 by year')+
+  theme(legend.position = "bottom")
+plot1+plot2
 ```
 
 
