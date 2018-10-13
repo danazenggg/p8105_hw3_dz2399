@@ -144,6 +144,7 @@ instacart %>%
   group_by(product_name, order_dow) %>% 
   summarize(mean_time= mean(order_hour_of_day)) %>% 
   spread(key=product_name, value=mean_time)
+
 ```
 
 ## Problem 3
