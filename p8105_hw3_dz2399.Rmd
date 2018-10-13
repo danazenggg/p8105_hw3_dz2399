@@ -111,7 +111,8 @@ instacart %>%
   group_by(aisle) %>% 
   summarise(number_of_items = n()) %>% 
   arrange(desc(number_of_items)) %>% 
-  slice(1)
+  slice(1) %>% 
+  knitr::kable()
 ```
 * There are 134 distinct rows, and the fresh vegetables aisle has the most items ordered, 150609 items.
 
