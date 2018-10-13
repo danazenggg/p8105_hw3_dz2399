@@ -41,6 +41,8 @@ df_brfss %>%
   filter(locations == 7 ) %>% 
   distinct(locationabbr)
 ```
+
+
 * In 2002, Connecticut, Florida and North Carolina were observed at 7 locations.
 
 #### Make a “spaghetti plot” that shows the number of observations in each state from 2002 to 2010.
@@ -51,9 +53,11 @@ df_brfss %>%
   ggplot(aes(x=year, y=n_obs, color = locationabbr))+
   geom_line()+
   ggtitle('the number of observations in each state from 2002 to 2010')+
-  theme(legend.position = "bottom")
-
+  theme(legend.position = "right")
 ```
+
+
+* The spaghetti plot shows that every state has similar number of observations, except for florida which has the exceptional number of observations in 2007 and 2010 .
 
 #### Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.
 ```{r}
@@ -79,6 +83,9 @@ df_brfss %>%
   facet_grid(.~response)
 ```
 
+
+* The distribution of state-level average over time seems to be similar over the years, and the mean difference between each response group holds throughout the years.
+
 ## Problem 2
 
 #### The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
@@ -89,7 +96,7 @@ instacart <- instacart %>%
   janitor::clean_names()
 ```
 
-The dataset has the dimension of `r dim(instacart)`. The order_id and product_is is a numeric variable that is the order identifier and the product identifier. The add_to_cart_order is a numeric value that represents the order in which each product was added to cart. 
+The dataset has the dimension of `r dim(instacart)`. Except for the regular id variables, add_to_cart_order is a numeric variable that describe the order of that item when putting in shopping cart. order_dow is a numeric variable that describes a day in a week when placing the order. aisle is character variable of that name of the asile. product_name is a character variable describing the name of the product.
 
 #### How many aisles are there, and which aisles are the most items ordered from?
 ```{r}
@@ -119,6 +126,7 @@ aisle_plot$aisle_id_group <- as.numeric(cut(aisle_plot$aisle_id,4))
   ggtitle('The number of items ordered in each aisle.')
 ```
 
+The most popular items' product id are 24, 83, 123.
 
 #### Make a table showing the most popular item aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”
 ```{r}
@@ -137,26 +145,34 @@ The most popular items in baking ingredients is light brown sugar, purchased 499
 
 #### Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table)
 ```{r}
-instacart %>% 
+ ins <- instacart %>% 
   filter(product_name=='Pink Lady Apples'
          |product_name=='Coffee Ice Cream') %>% 
   select(order_dow,order_hour_of_day,product_name) %>% 
   group_by(product_name, order_dow) %>% 
   summarize(mean_time= mean(order_hour_of_day)) %>% 
-  spread(key=product_name, value=mean_time)
-
+  spread(key=product_name, value=mean_time) %>% 
+  t() %>% 
+  as.data.frame()
+colnames(ins) <- c('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
+knitr::kable(ins[-1,])
 ```
 
+
+This table shows that the mean hour of people purchasing coffee ice cream and pink lady apples for each day of the week range approximately from 12pm to 4 pm. Poeple tend to order these items in the afternoon. 
+
 ## Problem 3
-```{r,eval==F}
+```{r,eval==T}
 data("ny_noaa")
 df_nynoaa <- ny_noaa %>% 
   separate(date,into = c("year","month","day")) %>% 
   janitor::clean_names() %>% 
-  mutate(tmin=as.numeric(tmin),
-         tmax=as.numeric(tmax)) %>% 
+  mutate(tmin=as.numeric(tmin)/10,
+         tmax=as.numeric(tmax)/10) %>% 
   na.omit()
 ```
+
+The resulting data dimension is `r dim(df_nynoaa)`. Id is character variable of the station id. Year, month and day are character variable of the corresponding date. Prcp is the precipitation of tenth of mm. Tmin and T max after the transformation are numeric variable in Celcius. Snow is an integer variable of snowfall in mm. With the regard to NAs, there are lots of NAs in the dataset, I omit all rows that have at least one NA, and the resulting dimesion is still big in enough(greater than 1 million). However, one could also just remove the NAs for the columns they are only interested in to have more observations.
 
 
 #### Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?
@@ -166,18 +182,25 @@ df_nynoaa %>%
   summarise(obs=n()) %>% 
   filter(obs==max(obs))
 ```
+
+
 * The most commonly observed value for snowfall is 0, since in New York it only snows for a couple of times in winter, other times the snowfall would be zero. 
 
 #### Make a two-panel plot showing the average temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+
 ```{r}
 df_nynoaa %>% 
   filter(month=='01'|month=='07') %>%
-  group_by(month,year) %>% 
+  group_by(month,year,id) %>% 
   summarise(month_mean=mean(tmax)) %>%
-  ggplot(aes(x=factor(month),y=month_mean))+
+  ggplot(aes(x=factor(year),y=month_mean))+
     geom_boxplot()+
-  ggtitle('The average temperature in January and in July in each station across years')
+    facet_grid(.~month)+
+  ggtitle('The mean max temperature in January and July in each station across years')+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
+
+This plot shows that across the years, both January and July have some oscillation and do not show a generally increaing or decreasing trend. And there are outliers since each station has different geographical characteristics. 
 
 #### Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
 ```{r}
@@ -194,6 +217,8 @@ plot2 <- df_nynoaa %>%
   theme(legend.position = "bottom")
 plot1+plot2
 ```
+
+The hex plot shows that the high frequencies concentrate in the middle, which indicates that when the tmin is within 0-20 Celcius and tmax is within 0-25 celcius, we would have the most of observations. The snowfalll plot show that the density curves overlap a lot, which indicates that the snowfall from 1981 to 2004 does not change greatly over the years.
 
 
 
