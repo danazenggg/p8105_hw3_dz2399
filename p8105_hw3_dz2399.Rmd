@@ -39,11 +39,12 @@ df_brfss %>%
   group_by(locationabbr) %>% 
   mutate(locations = length(unique(locationdesc))) %>% 
   filter(locations == 7 ) %>% 
-  distinct(locationabbr)
+  distinct(locationabbr) %>% 
+  knitr::kable()
 ```
 
 
-* In 2002, Connecticut, Florida and North Carolina were observed at 7 locations.
+In 2002, Connecticut, Florida and North Carolina were observed at 7 locations.
 
 #### Make a “spaghetti plot” that shows the number of observations in each state from 2002 to 2010.
 ```{r}
@@ -57,7 +58,7 @@ df_brfss %>%
 ```
 
 
-* The spaghetti plot shows that every state has similar number of observations, except for florida which has the exceptional number of observations in 2007 and 2010 .
+The spaghetti plot shows that every state has similar number of observations, except for florida which has the exceptional number of observations in 2007 and 2010 .
 
 #### Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.
 ```{r}
@@ -71,7 +72,9 @@ df_brfss %>%
   knitr::kable(digits = 1)
 ```
 
-* In 2002, the mean for "Excellent" response in across the New York state is 24 with the standard deviation of 4.5. In 2006, this mean is 22.5 with the standard deviation of 4.0. IN 2010, this mean is 22.7 with the standard deviation of 3.6.
+
+
+In 2002, the mean for "Excellent" response in across the New York state is 24 with the standard deviation of 4.5. In 2006, this mean is 22.5 with the standard deviation of 4.0. IN 2010, this mean is 22.7 with the standard deviation of 3.6.
 
 #### Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.
 ```{r}
