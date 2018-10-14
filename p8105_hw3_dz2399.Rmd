@@ -114,6 +114,8 @@ instacart %>%
   slice(1) %>% 
   knitr::kable()
 ```
+
+
 * There are 134 distinct rows, and the fresh vegetables aisle has the most items ordered, 150609 items.
 
 #### Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it.
@@ -184,7 +186,8 @@ The resulting data dimension is `r dim(df_nynoaa)`. Id is character variable of 
 df_nynoaa %>% 
   group_by(snow) %>% 
   summarise(obs=n()) %>% 
-  filter(obs==max(obs))
+  filter(obs==max(obs)) %>% 
+  knitr::kable()
 ```
 
 
