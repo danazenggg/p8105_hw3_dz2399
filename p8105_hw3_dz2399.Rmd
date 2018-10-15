@@ -195,7 +195,7 @@ df_nynoaa %>%
 #### Make a two-panel plot showing the average temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
 
 ```{r}
-label <- c('01'='January', '07'=='July')
+label <- c('01'='January', '07'='July')
 df_nynoaa %>% 
   filter(month=='01'|month=='07') %>%
   filter(!is.na(tmax)) %>% 
