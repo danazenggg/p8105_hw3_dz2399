@@ -174,11 +174,10 @@ df_nynoaa <- ny_noaa %>%
   separate(date,into = c("year","month","day")) %>% 
   janitor::clean_names() %>% 
   mutate(tmin=as.numeric(tmin)/10,
-         tmax=as.numeric(tmax)/10) %>% 
-  na.omit()
+         tmax=as.numeric(tmax)/10) 
 ```
 
-The resulting data dimension is `r dim(df_nynoaa)`. Id is character variable of the station id. Year, month and day are character variable of the corresponding date. Prcp is the precipitation of tenth of mm. Tmin and T max after the transformation are numeric variable in Celcius. Snow is an integer variable of snowfall in mm. With the regard to NAs, there are lots of NAs in the dataset, I omit all rows that have at least one NA, and the resulting dimesion is still big in enough(greater than 1 million). However, one could also just remove the NAs for the columns they are only interested in to have more observations.
+The resulting data dimension is `r dim(df_nynoaa)`. Id is character variable of the station id. Year, month and day are character variable of the corresponding date. Prcp is the precipitation of tenth of mm. Tmin and T max after the transformation are numeric variable in Celcius. Snow is an integer variable of snowfall in mm. With the regard to NAs, there are lots of NAs in the dataset, since there are lots of NAs in the dataset, we would want to omit NAs for only the columns we are interested in, otherwise we would loose lots of data.
 
 
 #### Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?
@@ -198,6 +197,7 @@ df_nynoaa %>%
 ```{r}
 df_nynoaa %>% 
   filter(month=='01'|month=='07') %>%
+  filter(!is.na(tmax)) %>% 
   group_by(month,year,id) %>% 
   summarise(month_mean=mean(tmax)) %>%
   ggplot(aes(x=factor(year),y=month_mean))+
@@ -211,12 +211,16 @@ This plot shows that across the years, both January and July have some oscillati
 
 #### Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
 ```{r}
-plot1 <- ggplot(data=df_nynoaa, aes(x=tmax,y=tmin))+
+df_3_1 <- df_nynoaa %>% 
+  filter(!is.na(tmax),!is.na(tmin)) 
+plot1 <- ggplot(data=df_3_1, aes(x=tmax,y=tmin))+
   geom_hex()+
   ggtitle('tmax vs tmin for the full dataset')+
   theme(legend.position = "bottom")
 
-plot2 <- df_nynoaa %>%
+df_3_2 <- df_nynoaa %>% 
+  filter(!is.na(snow))
+plot2 <- df_3_2 %>%
   filter(snow>0,snow<100) %>%
   ggplot(aes(x=snow, color=year))+
   geom_density( alpha=0.3)+
